@@ -1,0 +1,16 @@
+{
+  "device": "cuda",
+  "path": "data/SMPL/DFAUST",
+  "size_latent": 16,
+  "train_batch_size": 16,
+  "learning_rate": 1e-4,
+  "test_batch_size": 64,
+  "model_type": "LearnedPooling",
+  "nb_freq": 4096,
+  "activation_func": "ELU",
+  "size_conv": 3,
+  "num_workers": 4,
+  "num_iterations": 10000,
+  "check_val_every_n_epoch": 10,
+  "loss_type": "MSE"
+}

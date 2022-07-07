@@ -1,0 +1,17 @@
+{
+    "activation_func": "ELU",
+    "check_val_every_n_epoch": 10,
+    "device": "cuda",
+    "job_id": "SAE-LP-4096-16",
+    "learning_rate": 0.0001,
+    "loss_type": "MSE",
+    "model_type": "LearnedPooling",
+    "nb_freq": 4096,
+    "num_iterations": 1000,
+    "num_workers": 4,
+    "path": "data/SMPL/AMASS",
+    "size_conv": 3,
+    "size_latent": 16,
+    "test_batch_size": 64,
+    "train_batch_size": 16
+}

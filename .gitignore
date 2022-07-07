@@ -1,0 +1,9 @@
+.idea/
+*polyscope.ini
+imgui.ini
+*__pycache__/
+*.hdf5
+data.zip
+data/
+*.npy
+*.hdf5

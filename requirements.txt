@@ -1,0 +1,4 @@
+webdataset
+pytorch-lightning
+tensorboard
+polyscope
