@@ -1,6 +1,6 @@
 import torch
-from train import get_dataloader
 import time
+from train import get_dataloader
 
 
 def get_coeffs(wanted_index, opt, dataset_type):
@@ -17,7 +17,8 @@ def get_coeffs(wanted_index, opt, dataset_type):
 
     print('Looking for mesh in dataset...', end=" ")
 
-    for j, data in enumerate(dataloader, wanted_index):
+    # dataloader is sliced, first iteration is the wanted index
+    for data in dataloader:
         coeffs[0, ...] = data[1][0, :opt['nb_freq'], ...]
 
         if dataset_type == 'test':

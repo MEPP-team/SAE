@@ -109,8 +109,6 @@ class LearnedPooling(Template):
 
                 k += 1
 
-        self.activation_ = self.activation()
-
     def enc(self, x):
         x = x.permute(0, 2, 1)
 

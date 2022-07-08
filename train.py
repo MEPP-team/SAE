@@ -27,6 +27,7 @@ def get_opt(job_id, load):
 
         parser.add_argument('--job_id', required=True)
 
+        # so we can pass other default options as program argument
         for key, value in opt.items():
             parser.add_argument('--' + key, default=value, type=type(value))
 
@@ -41,18 +42,13 @@ def get_opt(job_id, load):
         with open('checkpoints/' + str(opt['job_id']) + '/infos.json', "w") as outfile:
             json.dump(opt, outfile, sort_keys=True, indent=4)
 
-    print('Options:')
-    print(json.dumps(opt, sort_keys=True, indent=4))
-    print()
+    print('Options:\n', json.dumps(opt, sort_keys=True, indent=4), end="\n\n")
 
     return opt
 
 
 def get_dataloader(opt, dataset_type, batch_size, wanted_index=None, shuffle=True):
-    if wanted_index is not None:
-        dataloader_slice = True
-    else:
-        dataloader_slice = False
+    dataloader_slice = wanted_index is not None
 
     url = opt['path'] + "/" + dataset_type + ".tar"
 
@@ -81,10 +77,6 @@ def get_dataloader(opt, dataset_type, batch_size, wanted_index=None, shuffle=Tru
     )
 
 
-def get_best_checkpoint_filename(job_id):
-    return 'checkpoints/' + str(job_id) + "/last.ckpt"
-
-
 def load_trainer(job_id=None):
     if job_id is None:
         load = False
@@ -107,7 +99,7 @@ def load_trainer(job_id=None):
     if opt['loss_type'] == "MSE":
         opt['loss'] = torch.nn.MSELoss()
     else:
-        print('Loss type not implemented')
+        print('Loss type not implemented.')
         exit()
 
     opt['nb_vertices'] = 6890
@@ -130,8 +122,7 @@ def load_trainer(job_id=None):
 
     nb_params = sum(p.numel() for p in opt['model'].parameters() if p.requires_grad)
 
-    print('Number of parameters:', str(nb_params))
-    print()
+    print('Number of parameters:', str(nb_params), end="\n\n")
 
     # pytorch lightning
     logger = TensorBoardLogger(
@@ -154,15 +145,13 @@ def load_trainer(job_id=None):
         refresh_rate=1
     )
 
-    trainer = pl.Trainer(
+    pl_trainer = pl.Trainer(
         accelerator='gpu', devices=1,
         profiler="simple",
         max_epochs=opt['num_iterations'],
-        # val_check_interval=100000
         check_val_every_n_epoch=opt['check_val_every_n_epoch'],
         logger=logger,
         precision=32,
-        # precision=16,
         default_root_dir='checkpoints/',
         callbacks=[checkpoint_callback, progress_bar],
         deterministic=False,
@@ -170,12 +159,11 @@ def load_trainer(job_id=None):
     )
 
     if load:
-        best_checkpoint_filename = get_best_checkpoint_filename(job_id)
+        best_checkpoint_filename = 'checkpoints/' + str(job_id) + "/last.ckpt"
         print('Loading checkpoint:', best_checkpoint_filename)
         opt['model'] = opt['model'].load_from_checkpoint(best_checkpoint_filename, opt=opt).to(opt["device"])
-        # opt['model'].freeze()
 
-    return trainer, opt
+    return pl_trainer, opt
 
 
 if __name__ == "__main__":

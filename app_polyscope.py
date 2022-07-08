@@ -2,12 +2,12 @@ import os
 import random
 import polyscope.imgui as psim
 import torch
+import polyscope as ps
 
 from train import load_trainer
 from models.utils.error_meshes import error_meshes_mm
 from models.utils.get_coeffs import get_coeffs
 from models.utils.colors import colors
-import polyscope as ps
 
 
 def register_surface(array, name, triv, index_color, transparency=1.0):
@@ -32,7 +32,14 @@ def reconstruction(wanted_index, opt, dataset, saturation=0.05):
     output_mesh = register_surface(output_spatial[0], "Output", opt['TRIV'], 1)
 
     distances = error_meshes_mm(vertices, output_spatial)[0]
-    output_mesh.add_scalar_quantity("Errors", distances.cpu().numpy(), enabled=True, cmap='reds', vminmax=(0, saturation))
+
+    output_mesh.add_scalar_quantity(
+        "Errors",
+        distances.cpu().numpy(),
+        enabled=True,
+        cmap='reds',
+        vminmax=(0, saturation)
+    )
 
     print('Mean distance: %.2fmm' % (distances.mean().item() * 1000), end="\n\n")
 
@@ -41,10 +48,10 @@ def reconstruction(wanted_index, opt, dataset, saturation=0.05):
 
 def interp(wanted_indices, opt, dataset):
     a = 0.5
-    inputs_0, vertices_0 = get_coeffs(wanted_indices[0], opt, dataset)
-    inputs_1, vertices_1 = get_coeffs(wanted_indices[1], opt, dataset)
+    input_0, vertices_0 = get_coeffs(wanted_indices[0], opt, dataset)
+    input_1, vertices_1 = get_coeffs(wanted_indices[1], opt, dataset)
 
-    inputs = torch.cat([inputs_0, inputs_1], dim=0)
+    inputs = torch.cat([input_0, input_1], dim=0)
 
     if dataset == 'test':
         vertices = torch.cat([vertices_0, vertices_1], dim=0)
