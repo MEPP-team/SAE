@@ -77,7 +77,7 @@ def get_dataloader(opt, dataset_type, batch_size, wanted_index=None, shuffle=Tru
     )
 
 
-def load_trainer(job_id=None):
+def load_trainer(job_id=None, profiler="simple"):
     if job_id is None:
         load = False
     else:
@@ -147,7 +147,7 @@ def load_trainer(job_id=None):
 
     pl_trainer = pl.Trainer(
         accelerator='gpu', devices=1,
-        profiler="simple",
+        profiler=profiler,
         max_epochs=opt['num_iterations'],
         check_val_every_n_epoch=opt['check_val_every_n_epoch'],
         logger=logger,

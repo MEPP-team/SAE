@@ -32,13 +32,17 @@ It contains :
 
 Both datasets use the [WebDataset](https://github.com/webdataset/webdataset) format. They contain only the spectral coefficients for the train sets and the spectral coefficients + the vertices for the test sets. Details on datasets are given in the paper.
 
-## Train
+## Train a new model
 
-In order to train a model, execute the following command specifying a `job_id`: `python train.py --job_id=...`. Training is done using the framework PyTorch Lightning. It will create logs in a folder `tb_logs/`, which you can visualize using the command `tensorboard --logdir tb_logs`. The results in the paper were obtained using the options `deterministic=False` and `benchmark=True` for better performance. Reconstruction results of newly trained models can therefore differ by a small margin. 
+In order to train a model, execute the following command specifying a `job_id` like `python train.py --job_id=0` or `python train.py --job_id=SAE`. Training is done using the framework PyTorch Lightning. It will create a new folder in the `checkpoints/` directory and create logs in a folder `tb_logs/`, which you can visualize using the command `tensorboard --logdir tb_logs`. The results in the paper were obtained using the options `deterministic=False` and `benchmark=True` for better performance. Reconstruction results of newly trained models can therefore differ by a small margin. 
 
-## Pretrained model
+## Reproducibility - Evaluate a pretrained model
 
-A pretrained model is available in the `checkpoints/SAE-LP-4096-16/` directory and corresponds to the *Spectral Autoencoder with Learned Pooling using 4096 frequencies and a latent space of size 16*. It is possible to evaluate the model's reconstruction score on the test dataset (`python eval_accuracy.py`) or to visualize its ability to reconstruct/interpolate meshes (`python app_polyscope.py`) using [Polyscope](https://polyscope.run/py/).
+A pretrained model is available in the `checkpoints/SAE-LP-4096-16/` directory and corresponds to the *Spectral Autoencoder with Learned Pooling using 4096 frequencies and a latent space of size 16*. In both evaluation scripts (`eval_accuracy.py` and `app_polyscope.py`), the model is loaded using `load_trainer("SAE-LP-4096-16")`.
+
+It is possible to: 
+- evaluate the model's reconstruction score on the test dataset (`python eval_accuracy.py`), in order to reproduce the value presented in the Figure 6 of the paper for the SAE-LP-4096, AMASS dataset and a latent size of 16. 
+- visualize its ability to reconstruct/interpolate meshes (`python app_polyscope.py`) using [Polyscope](https://polyscope.run/py/). In order to reproduce the first and last line of Figure 11 of the paper, you need to launch this script and click on `Load interp` (indices for both meshes are already set to 10 for `Index 0` and 871 for `Index 1` corresponding to meshes presented in the Figure).
 
 ## Acknowledgements
 This work was supported by the ANR project Human4D ANR-19-CE23-0020.

@@ -118,8 +118,8 @@ def get_opts(job_id):
 
     opt_ui["start"] = True
 
-    opt_ui["index_couple_0"] = 434
-    opt_ui["index_couple_1"] = 9863
+    opt_ui["index_couple_0"] = 10
+    opt_ui["index_couple_1"] = 871
 
     return opt_ui, opt, opt_infos
 
