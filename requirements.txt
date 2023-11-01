@@ -1,4 +1,4 @@
 webdataset
-pytorch-lightning
+pytorch-lightning == 1.6.0
 tensorboard
 polyscope
