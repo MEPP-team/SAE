@@ -32,6 +32,13 @@ It contains :
 
 Both datasets use the [WebDataset](https://github.com/webdataset/webdataset) format. They contain only the spectral coefficients for the train sets and the spectral coefficients + the vertices for the test sets. Details on datasets are given in the paper.
 
+> [!NOTE]
+> The archive is currently unavailable. We are working on making it accessible again.
+> Here are steps to follow to recreate the dataset:
+> - first get the SMPL connectivity: a matrix of size T*3, T being the number of triangles. This matrix is made of the indices of connected vertices
+> - compute eigenvectors from this connectivity using MATLAB or other language (you can find related code to compute the Graph Laplacian and eigenvectors here for example: https://www.lix.polytechnique.fr/~maks/fmaps_SIG17_course/publications.html)
+> - then, download AMASS or DFAUST dataset and project all the vertices of each sample on the eigenvectors computed earlier
+
 ## Train a new model
 
 In order to train a model, execute the following command specifying a `job_id` like `python train.py --job_id=0` or `python train.py --job_id=SAE`. Training is done using the framework PyTorch Lightning. It will create a new folder in the `checkpoints/` directory and create logs in a folder `tb_logs/`, which you can visualize using the command `tensorboard --logdir tb_logs`. The results in the paper were obtained using the options `deterministic=False` and `benchmark=True` for better performance. Reconstruction results of newly trained models can therefore differ by a small margin. 
