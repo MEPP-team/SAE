@@ -7,3 +7,6 @@ data.zip
 data/
 *.npy
 *.hdf5
+*.code-workspace
+tb_logs/
+.vscode/

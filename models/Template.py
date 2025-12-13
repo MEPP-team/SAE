@@ -11,6 +11,7 @@ class Template(pl.LightningModule):
         super(Template, self).__init__()
         self.opt = opt
         self.needed_freq = opt['nb_freq']
+        self.test_step_outputs = []
 
     def forward(self, x):
         latent = self.enc(x)
@@ -27,7 +28,6 @@ class Template(pl.LightningModule):
         lr_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
             optimizer,
             mode='min',
-            verbose=True,
             factor=0.99,
             patience=3
         )
@@ -48,12 +48,9 @@ class Template(pl.LightningModule):
         outputs = self.forward(inputs)
 
         loss = self.opt['loss'](outputs, inputs)
+        self.log("spectral_train_loss", loss, on_step=True, prog_bar=True, logger=True)
 
         return {"loss": loss}
-
-    def training_epoch_end(self, training_step_outputs):
-        mean_outs = torch.mean(torch.stack([x['loss'] for x in training_step_outputs]))
-        self.log("spectral_train_loss", mean_outs)
 
     def validation_step(self, val_batch, batch_idx):
         _, inputs, vertices = val_batch
@@ -84,11 +81,12 @@ class Template(pl.LightningModule):
 
         losses = torch.mean(error_meshes_mm(vertices, outputs), dim=1)
         losses = losses.tolist()
+        self.test_step_outputs.append(losses)
         return losses
 
-    def test_epoch_end(self, test_step_outputs):
+    def on_test_epoch_end(self):
         # output is list of list of different sizes (smaller last batch), so we have to work on lists
-        flatten_list = [element for sublist in test_step_outputs for element in sublist]
+        flatten_list = [element for sublist in self.test_step_outputs for element in sublist]
         flatten_array = np.array(flatten_list)*1e3
 
         self.log("mean spatial_loss", flatten_array.mean())
@@ -96,6 +94,8 @@ class Template(pl.LightningModule):
         self.log("std spatial_loss", flatten_array.std())
         self.log("min spatial_loss", flatten_array.min())
         self.log("max spatial_loss", flatten_array.max())
+        
+        self.test_step_outputs.clear()
 
     def on_train_epoch_start(self):
         self.start_time = time.time()

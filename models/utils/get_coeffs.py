@@ -4,31 +4,29 @@ from train import get_dataloader
 
 
 def get_coeffs(wanted_index, opt, dataset_type):
-    start = time.time()
-
-    dataloader = get_dataloader(opt, dataset_type, 1, wanted_index=wanted_index)
+    dataloader = opt['dataloader_' + dataset_type]
 
     coeffs = torch.zeros((1, opt['nb_freq'], 3)).to(opt["device"])
 
-    if dataset_type == 'test':
+    if dataset_type == 'vald':
         vertices = torch.zeros((1, opt['nb_vertices'], 3)).to(opt["device"])
     else:
         vertices = None
 
-    print('Looking for mesh in dataset...', end=" ")
+    if dataset_type == 'vald':
+        _, coeffs_dataloader, vertices_dataloader = dataloader.dataset.__getitem__(wanted_index)
 
-    # dataloader is sliced, first iteration is the wanted index
-    for data in dataloader:
-        coeffs[0, ...] = data[1][0, :opt['nb_freq'], ...]
+        coeffs[0, ...] = coeffs_dataloader[:opt['nb_freq'], ...]
+        vertices[0, ...] = vertices_dataloader
 
-        if dataset_type == 'test':
-            vertices[0, ...] = data[2][0, ...]
+    elif dataset_type == 'train':
+        _, coeffs_dataloader = dataloader.dataset.__getitem__(wanted_index)
 
-        break
+        coeffs[0, ...] = coeffs_dataloader[:opt['nb_freq'], ...]
+    else:
+        print('Dataset type not recognized.')
+        exit()
 
     coeffs = coeffs.to(opt['device']).float()
-
-    end = time.time()
-    print(" done. Elapsed time: ", end - start, "s")
 
     return coeffs, vertices

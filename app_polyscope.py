@@ -41,7 +41,7 @@ def reconstruction(wanted_index, opt, dataset, saturation=0.05):
         vminmax=(0, saturation)
     )
 
-    print('Mean distance: %.2fmm' % (distances.mean().item() * 1000), end="\n\n")
+    print('Mean distance: %.2fmm' % (distances.mean().item() * 1000), end="\n")
 
     return opt["model"].enc(input)
 
@@ -99,7 +99,7 @@ def interp_a(opt, all_coeffs, a):
 
 def get_opts(job_id):
     # Create options for model and Polyscope
-    trainer, opt = load_trainer(job_id)
+    trainer, opt = load_trainer(job_id, seed_everything_flag=False)
 
     opt_infos = "\nModel informations: \n\n"
     for key, value in opt.items():
@@ -118,8 +118,8 @@ def get_opts(job_id):
 
     opt_ui["start"] = True
 
-    opt_ui["index_couple_0"] = 10
-    opt_ui["index_couple_1"] = 871
+    opt_ui["index_couple_0"] = 7139
+    opt_ui["index_couple_1"] = 167
 
     return opt_ui, opt, opt_infos
 
@@ -155,7 +155,7 @@ def callback():
         dataset = 'train'
         max = opt['nb_train']-1
     else:
-        dataset = 'test'
+        dataset = 'vald'
         max = opt['nb_evals']-1
 
     # Choose train or test dataset
@@ -212,16 +212,15 @@ def callback():
             opt_ui["index_couple_1"] = random.randint(0, max)
 
         # Some interesting indices of meshes to visualise interpolation
-        interesting_indices = [[434, 9863], [5635, 9891], [1307, 3814], [5977, 10415]]
+        interesting_indices = [[7016, 4566], [5240, 3218], [6441, 134], [728, 2358]]
         if psim.TreeNode("Interesting indices"):
-            if psim.TreeNode("AMASS"):
+            if psim.TreeNode("AMASS (Test dataset)"):
                 text = [str(interesting_indices[i][0]) + "-" + str(interesting_indices[i][1]) + "\n"
                         for i in range(len(interesting_indices))]
                 psim.TextUnformatted(''.join(text))
+                psim.TreePop()
 
             psim.TreePop()
-
-        psim.TreePop()
 
         if psim.Button("Load interp"):
             ps.remove_all_structures()
@@ -235,7 +234,7 @@ def callback():
             if changed_a:
                 interp_a(opt, opt_ui["all_coeffs"], opt_ui["a"])
 
-        psim.TreePop()
+    psim.TreePop()
 
 
 if __name__ == "__main__":
@@ -245,7 +244,8 @@ if __name__ == "__main__":
         opt_ui, opt, opt_infos = get_opts(job_id)
 
         ps.init()
-        ps.set_up_dir("z_up")
+        ps.set_up_dir("y_up")
+        ps.set_front_dir("x_front")
         ps.set_ground_plane_mode("shadow_only")
         ps.set_ground_plane_height_factor(0)  # adjust the plane height
 

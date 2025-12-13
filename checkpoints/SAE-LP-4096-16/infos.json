@@ -7,11 +7,11 @@
     "loss_type": "MSE",
     "model_type": "LearnedPooling",
     "nb_freq": 4096,
-    "num_iterations": 1000,
-    "num_workers": 4,
-    "path": "data/SMPL/AMASS",
+    "num_iterations": 10000,
+    "num_workers": 1,
+    "path": "data/SMPL/Datasets/AMASS_splits",
     "size_conv": 3,
     "size_latent": 16,
-    "test_batch_size": 64,
-    "train_batch_size": 16
+    "train_batch_size": 128,
+    "vald_batch_size": 64
 }

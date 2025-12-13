@@ -8,4 +8,4 @@ if __name__ == "__main__":
 
         trainer, opt = load_trainer(job_id, profiler=None)
 
-        trainer.test(opt["model"], opt['dataloader_test'])
+        trainer.test(opt["model"], opt['dataloader_vald'])
